@@ -1,23 +1,18 @@
-import json
-import time
-
 import streamlit as st
 import plotly.graph_objects as go
 from streamlit_option_menu import option_menu
-
 from openai import OpenAI
+import json
+import time
 
-st.set_page_config(
-    page_title="Tourist Assistant",
-    page_icon="🧭",
-    layout="wide",
-    initial_sidebar_state="collapsed",
-)
+
+st.set_page_config(page_title="Travel Companion", page_icon="✈️", layout="wide")
+
 
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-
 assistant_id = st.secrets["OPENAI_ASSISTANT_ID"]
 
+# Define global state variables
 assistant_state = "assistant"
 thread_state = "thread"
 conversation_state = "conversation"
@@ -160,20 +155,16 @@ def on_reset_thread():
 
 #   
     
-
 with st.sidebar:
-    selected = option_menu(
-        menu_title=" Menu",
-        options=["home", "contact"]
-    )
+    selected = option_menu("Navigation", ["home", "contact"], icons=["globe", "envelope"], menu_icon="cast", default_index=0)
 
+# Main page layout
 if selected == "home":
-    st.title("Tourist Assistant") 
+    st.title("🌍 Explore with Travel Companion")
+    st.write("Ask me anything about your next travel destination!")
+    
 
-    tab1, tab2 = st.tabs(["Tourist App", "Images"])
-
-    with tab1:
-        st.header("")
+    tab1 = st.tabs(["Tourist App"])
 
 
     left_col, right_col = st.columns(2)
@@ -222,7 +213,7 @@ if selected == "home":
         )
 
     st.chat_input(
-        placeholder="Ask your question here",
+        placeholder="Ask me anything about your next travel destination!",
         key=user_msg_input_key,
         on_submit=on_text_input,
         args=(status_placeholder,),
