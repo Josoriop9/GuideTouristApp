@@ -163,79 +163,90 @@ def on_reset_thread():
 
 with st.sidebar:
     selected = option_menu(
-        menu_title="Main Menu",
-        options=["home", "projects", "contact"]
+        menu_title=" Menu",
+        options=["home", "contact"]
     )
 
-    if selected == "home":
-        st.title(f"you have selected2 {selected}")
+if selected == "home":
+    st.title("Tourist Assistant") 
 
-    if selected == "project":
-        st.title(f"you have selected {selected}")
+    tab1, tab2 = st.tabs(["Tourist App", "Images"])
 
-    if selected == "contact":
-        st.title(f"you have selected {selected}")
+    with tab1:
+        st.header("")
 
-tab1, tab2 = st.tabs(["Tourist App", "Images"])
 
-with tab1:
-   st.header("")
+    left_col, right_col = st.columns(2)
 
-st.title("Tourist Assistant")
-left_col, right_col = st.columns(2)
+    with left_col:
+        with st.container():
+            for role, message in st.session_state[conversation_state]:
+                with st.chat_message(role):
+                    st.write(message)
+        status_placeholder = st.empty()
 
-with left_col:
-    with st.container():
-        for role, message in st.session_state[conversation_state]:
-            with st.chat_message(role):
-                st.write(message)
-    status_placeholder = st.empty()
-
-with right_col:
-    fig = go.Figure(
-        go.Scattermapbox(
-            mode="markers",
-        )
-    )
-    if st.session_state[markers_state] is not None:
-        fig.add_trace(
+    with right_col:
+        fig = go.Figure(
             go.Scattermapbox(
                 mode="markers",
-                marker=go.scattermapbox.Marker(
-                    size=24,
-                    color="red",
-                ),
-                lat=st.session_state[markers_state]["lat"],
-                lon=st.session_state[markers_state]["lon"],
-                text=st.session_state[markers_state]["text"],
             )
         )
-    fig.update_layout(
-        margin=dict(l=0, r=0, t=0, b=0),
-        mapbox=dict(
-            accesstoken=st.secrets["MAPBOX_TOKEN"],
-            center=go.layout.mapbox.Center(
-                lat=st.session_state[map_state]["latitude"],
-                lon=st.session_state[map_state]["longitude"],
+        if st.session_state[markers_state] is not None:
+            fig.add_trace(
+                go.Scattermapbox(
+                    mode="markers",
+                    marker=go.scattermapbox.Marker(
+                        size=24,
+                        color="red",
+                    ),
+                    lat=st.session_state[markers_state]["lat"],
+                    lon=st.session_state[markers_state]["lon"],
+                    text=st.session_state[markers_state]["text"],
+                )
+            )
+        fig.update_layout(
+            margin=dict(l=0, r=0, t=0, b=0),
+            mapbox=dict(
+                accesstoken=st.secrets["MAPBOX_TOKEN"],
+                center=go.layout.mapbox.Center(
+                    lat=st.session_state[map_state]["latitude"],
+                    lon=st.session_state[map_state]["longitude"],
+                ),
+                pitch=0,
+                zoom=st.session_state[map_state]["zoom"],
             ),
-            pitch=0,
-            zoom=st.session_state[map_state]["zoom"],
-        ),
-        height=600,
+            height=600,
+        )
+        st.plotly_chart(
+            fig, config={"displayModeBar": False}, use_container_width=True, key="plotly"
+        )
+
+    st.chat_input(
+        placeholder="Ask your question here",
+        key=user_msg_input_key,
+        on_submit=on_text_input,
+        args=(status_placeholder,),
     )
-    st.plotly_chart(
-        fig, config={"displayModeBar": False}, use_container_width=True, key="plotly"
-    )
 
 
-st.chat_input(
-    placeholder="Ask your question here",
-    key=user_msg_input_key,
-    on_submit=on_text_input,
-    args=(status_placeholder,),
-)
+elif selected == "contact":
+    st.title("Contact Us")
+    # Here you add the new visual or information for the contact section
+    st.subheader("Get in Touch")
+    # Example: Display a contact form
+    with st.form("contact_form", clear_on_submit=True):
+        name = st.text_input("Name")
+        email = st.text_input("Email")
+        message = st.text_area("Message")
+        submit_button = st.form_submit_button("Send")
+
+        if submit_button:
+            # Process the form data, for example, send an email or save the message
+            st.success("Thank you for your message!")
+
+    
 
 
 
-                    
+
                     
